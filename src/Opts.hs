@@ -1,7 +1,8 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Opts
-  ( ExplorerPort (..)
+  ( BlockExplorerHost (..)
+  , ExplorerPort (..)
   , RuntimeHost (..)
   , RuntimePort (..)
   , Options (..)
@@ -10,7 +11,7 @@ module Opts
   )
   where
 
-import Control.Newtype.Generics
+import Control.Newtype.Generics (Newtype, op)
 import GHC.Generics hiding (Prefix)
 import Options.Applicative ( (<**>), auto, header, help, info, long, metavar,
                              option, showDefault, strOption, value, execParser,
@@ -32,10 +33,16 @@ newtype RuntimePort = RuntimePort Int
 
 instance Newtype RuntimePort
 
+newtype BlockExplorerHost = BlockExplorerHost String
+  deriving (Generic, Show)
+
+instance Newtype BlockExplorerHost
+
 data Options = Options
   { optExplorerPort :: ExplorerPort
   , optRuntimeHost :: RuntimeHost
   , optRuntimePort :: RuntimePort
+  , optBlockExplorerHost :: BlockExplorerHost
   }
   deriving Show
 
@@ -63,6 +70,14 @@ parser = Options
         <> help "Port number of the running Marlowe Runtime server"
         <> showDefault
         <> value 8080
+        )
+      )
+  <*> ( BlockExplorerHost <$> strOption
+        (  long "block-explorer"
+        <> metavar "HOST"
+        <> help "Host for exploring Cardano blockchain addresses, transactions, etc."
+        <> showDefault
+        <> value "preprod.cardanoscan.io"
         )
       )
 

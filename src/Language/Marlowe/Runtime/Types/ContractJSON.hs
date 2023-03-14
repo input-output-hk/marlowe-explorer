@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE InstanceSigs #-}
 
 module Language.Marlowe.Runtime.Types.ContractJSON
   ( ContractJSON(..)
@@ -10,7 +11,7 @@ module Language.Marlowe.Runtime.Types.ContractJSON
   , getContractTransactions
   ) where
 
-import Data.Aeson ( withObject, (.:?), (.:), FromJSON(parseJSON), eitherDecode )
+import Data.Aeson ( withObject, (.:?), (.:), FromJSON(parseJSON), eitherDecode, Value )
 import Network.HTTP.Simple (parseRequest, getResponseBody, httpLBS, setRequestHeader, setRequestMethod)
 import Network.HTTP.Types (urlEncode)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8)
@@ -18,6 +19,7 @@ import Data.Text (pack, unpack)
 
 import Language.Marlowe.Runtime.Types.Common ( Block, Link(..) )
 import Language.Marlowe.Semantics.Types ( Contract(..), State(..) )
+import Data.Aeson.Types (Parser)
 
 
 data ContractJSON = ContractJSON {
@@ -26,6 +28,7 @@ data ContractJSON = ContractJSON {
 } deriving (Show, Eq)
 
 instance FromJSON ContractJSON where
+  parseJSON :: Value -> Parser ContractJSON
   parseJSON = withObject "JSON" $ \v -> ContractJSON
     <$> (Link <$> (v .: "links" >>= (.: "transactions")))
     <*> v .: "resource"
@@ -68,6 +71,7 @@ data Transaction = Transaction
   } deriving (Show, Eq)
 
 instance FromJSON Transaction where
+  parseJSON :: Value -> Parser Transaction
   parseJSON = withObject "Transaction" $ \o -> do
     res <- o .: "resource"
     Transaction
@@ -80,6 +84,7 @@ newtype Transactions = Transactions [Transaction]
   deriving (Show, Eq)
 
 instance FromJSON Transactions where
+  parseJSON :: Value -> Parser Transactions
   parseJSON = withObject "Transactions" $ \o -> do
     Transactions <$> o .: "results"
 

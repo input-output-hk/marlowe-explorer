@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE InstanceSigs #-}
 
 module Language.Marlowe.Runtime.Types.Common
   ( Block(..)
@@ -6,7 +7,7 @@ module Language.Marlowe.Runtime.Types.Common
   ) where
 
 import Data.Aeson ( withObject, (.:), FromJSON(parseJSON) )
-
+import Data.Aeson.Types (Value, Parser)
 
 -- Many of the resources we get back from Marlowe Runtime have a single link of
 -- some named kind, but the name varies ("contract" or "transaction"). This
@@ -23,6 +24,7 @@ data Block = Block
   deriving (Show, Eq)
 
 instance FromJSON Block where
+  parseJSON :: Value -> Parser Block
   parseJSON = withObject "Block" $ \v -> Block
     <$> v .: "blockHeaderHash"
     <*> v .: "blockNo"

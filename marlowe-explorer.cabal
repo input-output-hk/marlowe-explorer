@@ -25,10 +25,13 @@ source-repository head
 
 library
   exposed-modules:
+      Explorer.SharedContractCache
       Explorer.Web.ContractListView
       Explorer.Web.ContractView
       Explorer.Web.Util
       Language.Marlowe.Pretty
+      Language.Marlowe.Runtime.AdjustTip
+      Language.Marlowe.Runtime.Background
       Language.Marlowe.Runtime.Types.Common
       Language.Marlowe.Runtime.Types.ContractJSON
       Language.Marlowe.Runtime.Types.ContractsJSON
@@ -51,6 +54,7 @@ library
     , http-client
     , http-conduit
     , http-types
+    , mtl
     , newtype-generics
     , optparse-applicative
     , scientific
